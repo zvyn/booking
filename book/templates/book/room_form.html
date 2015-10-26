@@ -1,0 +1,100 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<head>
+    <title>Book</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet"
+          href="{% static "bootstrap/css/bootstrap.min.css" %}"
+          crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet"
+          href="{% static "bootstrap/css/bootstrap-theme.min.css" %}"
+          crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script
+          src="{% static "/static/bootstrap/js/bootstrap.js" %}"
+          crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">New guest:</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <form class="navbar-form navbar-left" style="width: 70%;">
+        <div class="form-group" style="25%">
+          <input type="text" class="form-control" placeholder="Name">
+        </div>
+        <div class="form-group" style="width: 65%;">
+          <input type="text" class="form-control" placeholder="Notes"
+                 style="width: 100%;">
+        </div>
+        <button type="submit" class="btn btn-default" style="width: 10%;">Add</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+<div class=container>
+<form method=POST action="">
+{% csrf_token %}
+{% for room, formset in room_formsets.items %}
+    {{ formset.management_form }}
+    <div class="panel panel-default">
+        <div class="panel-heading"<h3 class="panel-title">Room: {{ room }}</h3></div>
+        <div class="panel-body">
+            {% for form in formset %}
+            <div class="form-inline {% if form.instance.paid %}
+                        bg-success{% elif form.instance.id %}bg-warning{% endif %}">
+                <div class="form-group">
+                    {{ form.guest.label_tag  }}
+                    {{ form.guest }}
+                </div>
+                <div class="form-group">
+                    {{ form.start_date.label_tag  }}
+                    {{ form.start_date }}
+                </div>
+                <div class="form-group">
+                    {{ form.end_date.label_tag  }}
+                    {{ form.end_date }}
+                </div>
+                <div class="form-group">
+                    {{ form.paid_until.label_tag  }}
+                    {{ form.paid_until }}
+                </div>
+                <div class="form-group">
+                    {{ form.active.label_tag  }}
+                    {{ form.active }}
+                </div>
+                <div class="form-group">
+                    {{ form.DELETE.label_tag  }}
+                    {{ form.DELETE }}
+                </div>
+                {{ form.id  }}
+                {{ form.room }}
+                <ul class="bg-danger">
+                {{ form.errors }}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+<input class="btn btn-default" type=submit>
+</form>
+</div>
+</body>
