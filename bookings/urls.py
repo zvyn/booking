@@ -20,6 +20,7 @@ from datetime import date
 
 
 today = date.today()
+date_regex = r'2\d{3}/[1-9][0-9]?/[0-9]+'
 
 
 urlpatterns = [
@@ -34,5 +35,6 @@ urlpatterns = [
     url(r'^bookings/today/?$', book.views.BookingList.as_view(), kwargs=dict(
          day=today.day, month=today.month, year=today.year
     )),
+    url(r'^rooms/(?P<free>free)/((?P<date>{date_regex})(/(?P<end_date>{date_regex}))?)?/?$'.format(date_regex=date_regex), book.views.RoomList.as_view()),
     url(r'^/?$', book.views.test_view)
 ]

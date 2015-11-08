@@ -1,6 +1,5 @@
 from logging import getLogger
 from datetime import date, timedelta
-from django.views.generic.edit import UpdateView
 from django.shortcuts import render
 from django.forms.models import inlineformset_factory
 from django.forms.widgets import TextInput
@@ -26,8 +25,29 @@ class GuestDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class RoomList(generics.ListCreateAPIView):
-    queryset = Room.objects.all()
     serializer_class = RoomSerializer
+
+    def get_queryset(self):
+        if not self.kwargs.get('free', False):
+            return Room.objects.all()
+
+        def date_from_string(string):
+            return date(*map(int, string.split('/')))
+
+        start_date = self.kwargs.get('date', None)
+        end_date = self.kwargs.get('end_date', None)
+
+        if not date:
+            start_date = date.today()
+        else:
+            start_date = date_from_string(start_date)
+
+        if not end_date:
+            end_date = start_date
+        else:
+            end_date = date_from_string(end_date)
+
+        return Room.get_free(start_date, end_date=end_date)
 
 
 class RoomDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -36,7 +56,6 @@ class RoomDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BookingList(generics.ListCreateAPIView):
-    queryset = Booking.objects.all()
     serializer_class = BookingSerializer
 
 
@@ -60,7 +79,7 @@ class BookingList(generics.ListCreateAPIView):
             return Booking.objects.filter(start_date__lte=end,
                                           end_date__gte=start)
         else:
-            return super(BookingList, self).get_queryset()
+            return Booking.objects.all()
 
 
 class BookingDetail(generics.RetrieveUpdateDestroyAPIView):

@@ -3,6 +3,7 @@ from .models import Room, Booking, Guest
 
 
 class RoomSerializer(serializers.ModelSerializer):
+    free = serializers.IntegerField(read_only=True)
     class Meta:
         model = Room
 

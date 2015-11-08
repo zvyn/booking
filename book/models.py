@@ -10,17 +10,30 @@ class Room(models.Model):
     price_per_day = models.DecimalField(decimal_places=2, max_digits=5)
     price_per_week = models.DecimalField(decimal_places=2, max_digits=5)
 
-    @property
-    def free(self):
-        taken = self.bookings.count()
+    def __str__(self):
+        return "{name} ({beds} beds)".format(
+            name=self.name,
+            beds=self.beds)
+
+    @staticmethod
+    def get_free(date=date.today(), end_date=None):
+        results = []
+        for room in Room.objects.all():
+            room.free = room.free_beds(date, end_date=end_date)
+            if room.free:
+                results.append(room)
+        return results
+
+    def free_beds(self, date=date.today(), end_date=None):
+        if end_date is None:
+            end_date = date
+        taken = self.bookings.filter(start_date__lte=end_date,
+                                     end_date__gte=date).count()
         return self.beds - taken
+
 
     def get_absolute_url(self):
         return reverse('book.room', kwargs={'slug': self.slug})
-
-    def __str__(self):
-        return "{name} ({free} of {beds} free)".format(
-            name=self.name, free=self.free, beds=self.beds)
 
     class Meta:
         ordering = ('name', )
