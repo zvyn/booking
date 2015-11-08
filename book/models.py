@@ -3,17 +3,12 @@ from django.db import models
 from datetime import date
 
 class Room(models.Model):
-    slug = models.SlugField(max_length=256, help_text="Name")
+    name = models.SlugField(max_length=256, help_text="Name", primary_key=True)
     beds = models.SmallIntegerField(help_text="Number of beds.")
     shared = models.BooleanField(default=True)
     private = models.BooleanField(default=False)
     price_per_day = models.DecimalField(decimal_places=2, max_digits=5)
     price_per_week = models.DecimalField(decimal_places=2, max_digits=5)
-
-    @property
-    def name(self):
-        return self.slug
-
 
     @property
     def free(self):
@@ -28,13 +23,13 @@ class Room(models.Model):
             name=self.name, free=self.free, beds=self.beds)
 
     class Meta:
-        ordering = ('slug', )
+        ordering = ('name', )
         default_related_name = 'rooms'
 
 
 class Guest(models.Model):
     name = models.SlugField(max_length=256, unique=True, primary_key=True)
-    noted = models.TextField(max_length=2048, blank=True)
+    note = models.TextField(max_length=2048, blank=True)
 
     def __str__(self):
         return self.name
@@ -65,4 +60,5 @@ class Booking(models.Model):
             end=self.end_date, paid=self.paid)
 
     class Meta:
+        ordering = ('start_date', 'end_date')
         default_related_name = 'bookings'

@@ -16,10 +16,23 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 import book.views
+from datetime import date
+
+
+today = date.today()
+
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^room/(?P<slug>[a-zA-Z0-9]+)/?', book.views.RoomUpdate.as_view(),
-        name='book.room'),
+    url(r'^guest/(?P<pk>[a-zA-Z0-9]*)/?', book.views.GuestDetail.as_view()),
+    url(r'^guests/?$', book.views.GuestList.as_view()),
+    url(r'^room/(?P<pk>[a-zA-Z0-9]*)/?', book.views.RoomDetail.as_view()),
+    url(r'^rooms/?$', book.views.RoomList.as_view()),
+    url(r'^booking/(?P<pk>[0-9]*)/?', book.views.BookingDetail.as_view()),
+    url(r'^bookings/((?P<year>2\d{3})/((?P<month>(1[0-2]|[0-9]))?/(?P<day>[0-9]+)?)?)?/?$',
+        book.views.BookingList.as_view()),
+    url(r'^bookings/today/?$', book.views.BookingList.as_view(), kwargs=dict(
+         day=today.day, month=today.month, year=today.year
+    )),
     url(r'^/?$', book.views.test_view)
 ]
